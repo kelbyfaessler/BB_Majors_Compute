@@ -27,3 +27,23 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio
+*.aps
+*.idb
+*.ipch
+*.lastbuildstate
+*.log
+*.manifest
+*.pch
+*.pdb
+*.res
+*.sdf
+*.suo
+*.tlog
+
+# csv data files
+*.csv
+
+# Documentation
+*.docx
