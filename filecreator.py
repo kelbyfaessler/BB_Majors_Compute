@@ -27,8 +27,8 @@ def main():
     with open("./costs.csv", "r") as costs_file:
         #read costs
         costs_dict = create_costs_dict_from_file(costs_file)
-        #costs_player_names = create_key_list_from_dict(costs_dict)
-        costs_player_names = sorted(costs_dict)
+        #costs_name_list = create_key_list_from_dict(costs_dict)
+        costs_name_list = sorted(costs_dict)
 
         #read birdie stats
         html = urllib2.urlopen(STATS_URL)
@@ -44,15 +44,15 @@ def main():
         player_rows = soup.findAll('tr', {"id" : re.compile("playerStatsRow(.*)")})
         
         stats_dict = create_stats_dict_from_html(player_rows)
-        #stats_player_names = create_key_list_from_dict(stats_dict)
-        stats_player_names = sorted(stats_dict)
+        #stats_name_list = create_key_list_from_dict(stats_dict)
+        stats_name_list = sorted(stats_dict)
         
 
         #search csv for player name. If found, append birdie avg to csv
         #for key in costs_dict.keys():
         #   print ("key: " + key + " value: " + costs_dict[key])
         print('')
-        num_matches = calculate_num_matches()
+        num_matches = calculate_num_matches(costs_name_list, stats_name_list)
         print(num_matches)
 
         #print_names_from_both_sources(costs_list, stats_list)
@@ -122,6 +122,7 @@ def calculate_num_matches(costs_list, stats_list):
             stats_list.pop(0)
         else:
             costs_list.pop(0)
+    return num_matches
 
 if __name__ == "__main__":
     main()
