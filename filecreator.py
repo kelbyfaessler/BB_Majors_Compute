@@ -32,15 +32,8 @@ def main():
 
         #read birdie stats
         html = urllib2.urlopen(STATS_URL)
-        #use BeautifulSoup to parse html
+        #use BeautifulSoup library to parse html
         soup = bsoup(html)
-
-        '''
-        print('')
-        print('')
-        print('Encoding: ' + soup.originalEncoding)
-        '''
-
         player_rows = soup.findAll('tr', {"id" : re.compile("playerStatsRow(.*)")})
         
         stats_dict = create_stats_dict_from_html(player_rows)
@@ -51,11 +44,9 @@ def main():
         #search csv for player name. If found, append birdie avg to csv
         #for key in costs_dict.keys():
         #   print ("key: " + key + " value: " + costs_dict[key])
-        print('')
-        num_matches = calculate_num_matches(costs_name_list, stats_name_list)
-        print(num_matches)
+        print_total_num_matches(costs_name_list, stats_name_list)
 
-        #print_names_from_both_sources(costs_list, stats_list)
+        print_names_from_both_sources(costs_name_list, stats_name_list)
         
 
 def create_costs_dict_from_file(costs_file):
@@ -93,36 +84,53 @@ def create_stats_dict_from_html(player_rows):
         stats_dict[player_name] = birdie_pct_str
         #print(player_name)
     return stats_dict
-        
-def print_names_from_both_sources(costs_list, stats_list):
-    costs_list.sort()
-    stats_list.sort()
-    while (stats_list and costs_list):
-        if stats_list[0] == costs_list[0]:
-            print(stats_list[0] + "\t\t" + costs_list[0])
-            stats_list.pop(0)
-            costs_list.pop(0)
-        elif (stats_list[0] < costs_list[0]):
-            print(stats_list[0])
-            stats_list.pop(0)
-        else:
-            print("\t\t\t" + costs_list[0])
-            costs_list.pop(0)
+      
+def print_total_num_matches(costs_name_list, stats_name_list):
+    print('')
+    num_matches = calculate_num_matches(costs_name_list, stats_name_list)
+    print('--------------------------------------------------')
+    print('Total number of matches: ' + str(num_matches))
+    print('--------------------------------------------------')
 
+#Assumptions: both lists are already sorted
 def calculate_num_matches(costs_list, stats_list):
     num_matches = 0
     costs_list.sort()
     stats_list.sort()
-    while (stats_list and costs_list):
-        if stats_list[0] == costs_list[0]:
+    costs_index = 0
+    stats_index = 0
+    while (stats_index < len(stats_list) and costs_index < len(costs_list)):
+        if stats_list[stats_index] == costs_list[costs_index]:
             num_matches += 1
-            stats_list.pop(0)
-            costs_list.pop(0)
-        elif (stats_list[0] < costs_list[0]):
-            stats_list.pop(0)
+            stats_index += 1
+            costs_index += 1
+        elif (stats_list[stats_index] < costs_list[costs_index]):
+            stats_index += 1
         else:
-            costs_list.pop(0)
+            costs_index += 1
     return num_matches
+
+#Assumptions: both lists are already sorted
+def print_names_from_both_sources(costs_list, stats_list):
+    #Print header row
+    print('{0:22}{1}'.format(' From Stats' , ' From Costs'))
+    print('{0:22}{1}'.format('============', '============'))
+
+    costs_index = 0
+    stats_index = 0
+    #left_col_width = 22
+    while (stats_index < len(stats_list) and costs_index < len(costs_list)):
+        if stats_list[stats_index] == costs_list[costs_index]:
+            print('{0:22}{1}'.format(stats_list[stats_index], costs_list[costs_index]))
+            stats_index += 1
+            costs_index += 1
+        elif (stats_list[stats_index] < costs_list[costs_index]):
+            print(stats_list[stats_index])
+            stats_index += 1
+        else:
+            print('{0:22}{1:}'.format('', costs_list[costs_index]))
+            costs_index += 1
+
 
 if __name__ == "__main__":
     main()
