@@ -21,6 +21,7 @@ from BeautifulSoup import BeautifulSoup as bsoup
 
 #Birdie Percentage Stat
 STATS_URL = "http://www.pgatour.com/stats/stat.352.html"
+OUTPUT_FILE = "output.csv"
 
 def main():
     #costs_dict = {}
@@ -40,13 +41,11 @@ def main():
         #stats_name_list = create_key_list_from_dict(stats_dict)
         stats_name_list = sorted(stats_dict)
         
-
-        #search csv for player name. If found, append birdie avg to csv
-        #for key in costs_dict.keys():
-        #   print ("key: " + key + " value: " + costs_dict[key])
         print_total_num_matches(costs_name_list, stats_name_list)
-
         print_names_from_both_sources(costs_name_list, stats_name_list)
+
+        output_dict = combine_costs_stats(costs_dict, stats_dict)
+        create_output_csv(output_dict)
         
 
 def create_costs_dict_from_file(costs_file):
@@ -85,6 +84,26 @@ def create_stats_dict_from_html(player_rows):
         #print(player_name)
     return stats_dict
       
+def combine_costs_stats(costs_dict, stats_dict):
+    output_dict = {}
+    for key in costs_dict:
+        output_dict.setdefault(key, [])
+        output_dict[key].append(costs_dict[key])
+        if key in stats_dict:
+            output_dict[key].append(stats_dict[key])
+        else:
+            output_dict[key].append('')
+    return output_dict
+
+def create_output_csv(output_dict):
+    with open(OUTPUT_FILE, 'wb') as output_file:
+        writer = csv.DictWriter(output_file, 
+                                fieldnames=output_dict.keys(),
+                                delimiter=',')
+        for key in output_dict:
+            writer.writerow(key)
+
+
 def print_total_num_matches(costs_name_list, stats_name_list):
     print('')
     num_matches = calculate_num_matches(costs_name_list, stats_name_list)
