@@ -85,23 +85,26 @@ def create_stats_dict_from_html(player_rows):
     return stats_dict
       
 def combine_costs_stats(costs_dict, stats_dict):
-    output_dict = {}
+    output_list = []
     for key in costs_dict:
-        output_dict.setdefault(key, [])
-        output_dict[key].append(costs_dict[key])
+        player_dict = {}
+        player_dict['Name'] = str(key)
+        player_dict['Cost'] = str(costs_dict[key])
         if key in stats_dict:
-            output_dict[key].append(stats_dict[key])
+            player_dict['Birdie Avg'] = str(stats_dict[key])
         else:
-            output_dict[key].append('')
-    return output_dict
+            player_dict['Birdie Avg'] = ''
+        output_list.append(player_dict)
+    return output_list
 
-def create_output_csv(output_dict):
+def create_output_csv(player_list):
     with open(OUTPUT_FILE, 'wb') as output_file:
         writer = csv.DictWriter(output_file, 
-                                fieldnames=output_dict.keys(),
+                                fieldnames=['Name', 'Cost', 'Birdie Avg'],
                                 delimiter=',')
-        for key in output_dict:
-            writer.writerow(key)
+        writer.writeheader()
+        for player in player_list:
+            writer.writerow(player)
 
 
 def print_total_num_matches(costs_name_list, stats_name_list):
