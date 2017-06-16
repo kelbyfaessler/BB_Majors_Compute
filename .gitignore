@@ -41,6 +41,7 @@
 *.sdf
 *.suo
 *.tlog
+/.vs/*
 
 # csv data files
 *.csv
