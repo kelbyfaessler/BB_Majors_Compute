@@ -28,14 +28,17 @@ int main(int argc, char* argv[])
     ReadPlayerStats(statsFile, statsVector);
 
     //TEST
-    for (Player player : statsVector)
-    {
-        std::cout << "--------------------------------------" << std::endl;
-        std::cout << "Name: " << player.name << std::endl;
-        std::cout << "Cost: " << player.cost << std::endl;
-        std::cout << "Birdie Avg: " << player.birdieAvg << std::endl;
-    }
+    //for (Player player : statsVector)
+    //{
+    //    std::cout << "--------------------------------------" << std::endl;
+    //    std::cout << "Name: " << player.name << std::endl;
+    //    std::cout << "Cost: " << player.cost << std::endl;
+    //    std::cout << "Birdie Avg: " << player.birdieAvg << std::endl;
+    //}
     //END TEST
+
+    CalculateCombinations();
+    PrintBestCombinations();
 }
 
 void CheckArguments(int argc)
@@ -119,4 +122,16 @@ void HandleCannotOpenFile()
 {
     std::cout << "Error: cannot open file provided" << std::endl;
     exit(2);
+}
+
+//Assume ~150 players, of which 4 must be selected. 150!/146! = 486,246,600 permutations
+//486,246,600/4! = 20,260,275
+void CalculateCombinations()
+{
+
+}
+
+void PrintBestCombinations()
+{
+
 }
