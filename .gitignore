@@ -42,6 +42,8 @@
 *.suo
 *.tlog
 /.vs/*
+/Debug/*
+/Release/*
 
 # csv data files
 *.csv
