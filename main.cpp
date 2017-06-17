@@ -3,6 +3,7 @@
 #include "Player.h"
 
 #include <iostream>
+#include <fstream>
 
 //forward declarations
 void CheckArguments(int argc);
@@ -34,5 +35,20 @@ void HandleMissingFileArgument()
 
 void ReadPlayerStats(std::string i_fileName)
 {    
+    std::ifstream statsFile = std::ifstream(i_fileName, std::ios::in);
+    if (statsFile.is_open())
+    {
 
+        statsFile.close();
+    }
+    else
+    {
+        HandleCannotOpenFile();
+    }
+}
+
+void HandleCannotOpenFile()
+{
+    std::cout << "Error: cannot open file provided" << std::endl;
+    exit(2);
 }
