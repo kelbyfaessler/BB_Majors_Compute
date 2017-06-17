@@ -41,6 +41,7 @@
 *.sdf
 *.suo
 *.tlog
+*.user
 /.vs/*
 /Debug/*
 /Release/*
