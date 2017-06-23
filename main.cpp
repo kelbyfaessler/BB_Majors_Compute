@@ -125,7 +125,7 @@ void HandleCannotOpenFile()
 }
 
 //Assume ~150 players, of which 4 must be selected. 150!/146! = 486,246,600 permutations
-//486,246,600/4! = 20,260,275
+//486,246,600/4! = 20,260,275 combinations
 void CalculateCombinations()
 {
 

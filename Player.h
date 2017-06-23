@@ -7,6 +7,12 @@ struct Player
     float cost;
     float birdieAvg;
 
+    struct Player()
+    : name("")
+    , cost(0.0f)
+    , birdieAvg(0.0f)
+    {};
+
     struct Player(const std::string& i_name, float i_cost, float i_birdieAvg)
     : name(i_name)
     , cost(i_cost)
