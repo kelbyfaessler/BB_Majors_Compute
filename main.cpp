@@ -63,6 +63,7 @@ void ReadPlayerStats(std::string i_fileName, std::vector<Player>& statsVector)
     {
         std::string line;
         std::getline(statsFile, line); //header line, throwaway
+        int playerId = 0;
         while (std::getline(statsFile, line))
         {
             std::string name = ExtractSubstring(line);
@@ -71,8 +72,9 @@ void ReadPlayerStats(std::string i_fileName, std::vector<Player>& statsVector)
             if (name != "" && costStr != "")
             {
                 float birdieAvg = CalculateBirdieAvg(birdieAvgStr);
-                Player player = Player(name, std::stof(costStr), birdieAvg);
+                Player player = Player(playerId, name, std::stof(costStr), birdieAvg);
                 statsVector.push_back(player);
+                ++playerId;
             }
             else
             {

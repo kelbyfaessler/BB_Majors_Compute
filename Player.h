@@ -3,6 +3,7 @@
 
 struct Player
 {
+    int id;
     std::string name;
     float cost;
     float birdieAvg;
@@ -13,8 +14,9 @@ struct Player
     , birdieAvg(0.0f)
     {};
 
-    struct Player(const std::string& i_name, float i_cost, float i_birdieAvg)
-    : name(i_name)
+    struct Player(int i_id, const std::string& i_name, float i_cost, float i_birdieAvg)
+    : id(i_id)
+    , name(i_name)
     , cost(i_cost)
     , birdieAvg(i_birdieAvg)
     {};
