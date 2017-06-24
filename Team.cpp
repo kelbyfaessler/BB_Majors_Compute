@@ -21,6 +21,34 @@ Team::~Team()
 
 }
 
+void Team::SetPlayers(Player* p1, Player* p2, Player* p3, Player* p4)
+{
+    members[0] = p1;
+    members[1] = p2;
+    members[2] = p3;
+    members[3] = p4;
+}
+
+void Team::SetPlayer1(Player* p1)
+{
+    members[0] = p1;
+}
+
+void Team::SetPlayer2(Player* p2)
+{
+    members[1] = p2;
+}
+
+void Team::SetPlayer3(Player* p3)
+{
+    members[2] = p3;
+}
+
+void Team::SetPlayer4(Player* p4)
+{
+    members[3] = p4;
+}
+
 float Team::GetCost()
 {
     float cost = 0.0;

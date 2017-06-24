@@ -1,8 +1,10 @@
 /*Compute best best ball team*/
 
 #include "Player.h"
+#include "Team.h"
 
 #include <vector>
+#include <map>
 #include <iostream>
 #include <fstream>
 
@@ -23,9 +25,9 @@ int main(int argc, char* argv[])
     CheckArguments(argc);
 
     std::string statsFile = std::string(argv[1]);
-    std::vector<Player> statsVector;
-    statsVector.reserve(200);
-    ReadPlayerStats(statsFile, statsVector);
+    std::vector<Player> playerStats;
+    playerStats.reserve(200);
+    ReadPlayerStats(statsFile, playerStats);
 
     //TEST
     //for (Player player : statsVector)
@@ -37,7 +39,7 @@ int main(int argc, char* argv[])
     //}
     //END TEST
 
-    CalculateCombinations();
+    CalculateCombinations(playerStats);
     PrintBestCombinations();
 }
 
@@ -128,7 +130,16 @@ void HandleCannotOpenFile()
 
 //Assume ~150 players, of which 4 must be selected. 150!/146! = 486,246,600 permutations
 //486,246,600/4! = 20,260,275 combinations
-void CalculateCombinations()
+void CalculateCombinations(std::vector<Player>& playerStats)
+{
+    std::map<int, TeamData>* twoManTeamData = new std::map<int, TeamData>();
+    
+    Generate2ManTeamCombos(playerStats, twoManTeamData);
+    Generate3ManTeamCombos();
+    GenerateBest4ManTeamCombos();
+}
+
+void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<int, TeamData>* twoManTeamData)
 {
 
 }
