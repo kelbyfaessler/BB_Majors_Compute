@@ -22,6 +22,22 @@ struct Player
     {};
 };
 
+struct less_than_id
+{
+    inline bool operator() (const Player& player1, const Player& player2)
+    {
+        return (player1.id < player2.id);
+    }
+};
+
+struct greater_than_id
+{
+    inline bool operator() (const Player& player1, const Player& player2)
+    {
+        return (player1.id > player2.id);
+    }
+};
+
 struct less_than_cost
 {
     inline bool operator() (const Player& player1, const Player& player2)
