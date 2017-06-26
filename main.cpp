@@ -18,7 +18,10 @@ void HandleMissingRequiredStats();
 void HandleCannotOpenFile();
 void CalculateCombinations(std::vector<Player>& playerStats);
 void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
+void Generate3ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
 unsigned long CalculateTeamKey(int player1Id, int player2Id, int player3Id = 0, int player4Id = 0);
+void SortIdsLowToHigh(int& idLow, int& idMid, int& idHigh);
+void ExtractTwoManIds(unsigned long key, int& id1, int& id2);
 
 //Constants
 std::string DELIMITER = ",";
@@ -40,20 +43,50 @@ int main(int argc, char* argv[])
     //    std::cout << "Cost: " << player.cost << std::endl;
     //    std::cout << "Birdie Avg: " << player.birdieAvg << std::endl;
     //}
-    std::cout << "--------------------------------------" << std::endl;
-    std::cout << "Name: " << playerStats[0].name << std::endl;
-    std::cout << "ID  : " << playerStats[0].id << std::endl;
-    std::cout << "Cost: " << playerStats[0].cost << std::endl;
-    std::cout << "Birdie Avg: " << playerStats[0].birdieAvg << std::endl;
-    std::cout << "--------------------------------------" << std::endl;
-    std::cout << "Name: " << playerStats[99].name << std::endl;
-    std::cout << "ID  : " << playerStats[99].id << std::endl;
-    std::cout << "Cost: " << playerStats[99].cost << std::endl;
-    std::cout << "Birdie Avg: " << playerStats[99].birdieAvg << std::endl;
-    std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "Name: " << playerStats[0].name << std::endl;
+    //std::cout << "ID  : " << playerStats[0].id << std::endl;
+    //std::cout << "Cost: " << playerStats[0].cost << std::endl;
+    //std::cout << "Birdie Avg: " << playerStats[0].birdieAvg << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "Name: " << playerStats[99].name << std::endl;
+    //std::cout << "ID  : " << playerStats[99].id << std::endl;
+    //std::cout << "Cost: " << playerStats[99].cost << std::endl;
+    //std::cout << "Birdie Avg: " << playerStats[99].birdieAvg << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
+    //int a = 99;
+    //int b = 52;
+    //int c = 10;
+    //SortIdsLowToHigh(a, b, c);
+    //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
+    //a = 99;
+    //b = 10;
+    //c = 52;
+    //SortIdsLowToHigh(a, b, c);
+    //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
+    //a = 52;
+    //b = 99;
+    //c = 10;
+    //SortIdsLowToHigh(a, b, c);
+    //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
+    //a = 52;
+    //b = 10;
+    //c = 99;
+    //SortIdsLowToHigh(a, b, c);
+    //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
+    //a = 10;
+    //b = 99;
+    //c = 52;
+    //SortIdsLowToHigh(a, b, c);
+    //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
+    //a = 10;
+    //b = 52;
+    //c = 99;
+    //SortIdsLowToHigh(a, b, c);
+    //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
     //END TEST
 
-    CalculateCombinations(playerStats);
+    //CalculateCombinations(playerStats);
     //PrintBestCombinations();
 }
 
@@ -153,8 +186,8 @@ void CalculateCombinations(std::vector<Player>& playerStats)
     std::map<unsigned long, TeamData>* teamData = new std::map<unsigned long, TeamData>();
     
     Generate2ManTeamCombos(playerStats, teamData);
-    std::cout << "Two man combos: " << teamData->size() << std::endl;
-    //Generate3ManTeamCombos();
+    //std::cout << "Two man combos: " << teamData->size() << std::endl;
+    Generate3ManTeamCombos(playerStats, teamData);
     //GenerateBest4ManTeamCombos();
 }
 
@@ -202,7 +235,6 @@ void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned 
     //END TEST
 }
 
-
 unsigned long CalculateTeamKey(int player1Id, int player2Id, int player3Id, int player4Id)
 {
     //if (player1Id == 0 && player2Id == 99)
@@ -212,7 +244,66 @@ unsigned long CalculateTeamKey(int player1Id, int player2Id, int player3Id, int 
     return (player4Id * 1000000000) + (player3Id * 1000000) + (player2Id * 1000) + player1Id;
 }
 
+void Generate3ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData)
+{
+    std::map<unsigned long, TeamData>::iterator it;
+    for (it = teamData->begin(); it != teamData->end(); ++it)
+    {
+        int id1 = -1;
+        int id2 = -1;
+        TeamData twoManTeamData = it->second;
+        ExtractTwoManIds(it->first, id1, id2);
+        for (std::vector<Player>::iterator itNew = playerStats.begin(); itNew != playerStats.end() - 1; ++itNew)
+        {
+            if (itNew->id != id1 && itNew->id != id2)
+            {
+                int id3 = itNew->id;
+                SortIdsLowToHigh(id1, id2, id3);
+                float teamCost = twoManTeamData.totalCost + itNew->cost;
+                float teamBirdieAvg = twoManTeamData.totalBirdieAvg + itNew->birdieAvg;
+                unsigned long key = CalculateTeamKey(id1, id2, id3);
+                teamData->insert(std::pair<unsigned long, TeamData>(key, TeamData(teamCost, teamBirdieAvg)));
+            }
+        }
+    }
+}
 
+//id1 will be lesser id value
+void ExtractTwoManIds(unsigned long key, int& id1, int& id2)
+{
+    id1 = key % 1000;
+    id2 = key / 1000;
+}
+
+//Sorts low to high
+void SortIdsLowToHigh(int& idLow, int& idMid, int& idHigh)
+{
+    int arr[3] = { idLow, idMid, idHigh };
+    int temp;
+    if (idHigh < idMid)
+    {
+        temp = idMid;
+        idMid = idHigh;
+        idHigh = temp;
+    }
+    if (idMid < idLow)
+    {
+        temp = idLow;
+        idLow = idMid;
+        idMid = temp;
+    }
+    if (idHigh < idMid)
+    {
+        temp = idMid;
+        idMid = idHigh;
+        idHigh = temp;
+    }
+}
+
+void GenerateBest4ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData)
+{
+    //Make sure to check total cost < 30000 before adding team
+}
 
 void PrintBestCombinations()
 {
