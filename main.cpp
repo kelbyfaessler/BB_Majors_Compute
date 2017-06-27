@@ -43,17 +43,22 @@ int main(int argc, char* argv[])
     //    std::cout << "Cost: " << player.cost << std::endl;
     //    std::cout << "Birdie Avg: " << player.birdieAvg << std::endl;
     //}
-    //std::cout << "--------------------------------------" << std::endl;
-    //std::cout << "Name: " << playerStats[0].name << std::endl;
-    //std::cout << "ID  : " << playerStats[0].id << std::endl;
-    //std::cout << "Cost: " << playerStats[0].cost << std::endl;
-    //std::cout << "Birdie Avg: " << playerStats[0].birdieAvg << std::endl;
-    //std::cout << "--------------------------------------" << std::endl;
-    //std::cout << "Name: " << playerStats[99].name << std::endl;
-    //std::cout << "ID  : " << playerStats[99].id << std::endl;
-    //std::cout << "Cost: " << playerStats[99].cost << std::endl;
-    //std::cout << "Birdie Avg: " << playerStats[99].birdieAvg << std::endl;
-    //std::cout << "--------------------------------------" << std::endl;
+    std::cout << "--------------------------------------" << std::endl;
+    std::cout << "Name: " << playerStats[87].name << std::endl;
+    std::cout << "ID  : " << playerStats[87].id << std::endl;
+    std::cout << "Cost: " << playerStats[87].cost << std::endl;
+    std::cout << "Birdie Avg: " << playerStats[87].birdieAvg << std::endl;
+    std::cout << "--------------------------------------" << std::endl;
+    std::cout << "Name: " << playerStats[102].name << std::endl;
+    std::cout << "ID  : " << playerStats[102].id << std::endl;
+    std::cout << "Cost: " << playerStats[102].cost << std::endl;
+    std::cout << "Birdie Avg: " << playerStats[102].birdieAvg << std::endl;
+    std::cout << "--------------------------------------" << std::endl;
+    std::cout << "Name: " << playerStats[45].name << std::endl;
+    std::cout << "ID  : " << playerStats[45].id << std::endl;
+    std::cout << "Cost: " << playerStats[45].cost << std::endl;
+    std::cout << "Birdie Avg: " << playerStats[45].birdieAvg << std::endl;
+    std::cout << "--------------------------------------" << std::endl;
     //int a = 99;
     //int b = 52;
     //int c = 10;
@@ -86,7 +91,7 @@ int main(int argc, char* argv[])
     //std::cout << "a = " << a << ", b = " << b << ", c = " << c << std::endl;
     //END TEST
 
-    //CalculateCombinations(playerStats);
+    CalculateCombinations(playerStats);
     //PrintBestCombinations();
 }
 
@@ -189,6 +194,17 @@ void CalculateCombinations(std::vector<Player>& playerStats)
     //std::cout << "Two man combos: " << teamData->size() << std::endl;
     Generate3ManTeamCombos(playerStats, teamData);
     //GenerateBest4ManTeamCombos();
+    std::map<unsigned long, TeamData>::iterator it = teamData->find(102087045);
+    if (it != teamData->end())
+    {
+        TeamData testTeam = it->second;
+        std::cout << "Total team cost: " << testTeam.totalCost << std::endl;
+        std::cout << "Total team birdie: " << testTeam.totalBirdieAvg << std::endl;
+    }
+    else
+    {
+        std::cout << "Could not find team in map" << std::endl;
+    }
 }
 
 void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData)
@@ -258,7 +274,14 @@ void Generate3ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned 
             if (itNew->id != id1 && itNew->id != id2)
             {
                 int id3 = itNew->id;
+
                 SortIdsLowToHigh(id1, id2, id3);
+                //TEST
+                if (id1 == 45 && id2 == 87 && id3 == 102)
+                {
+                    std::cout << "Found 3 man team" << std::endl;
+                }
+                //END TEST
                 float teamCost = twoManTeamData.totalCost + itNew->cost;
                 float teamBirdieAvg = twoManTeamData.totalBirdieAvg + itNew->birdieAvg;
                 unsigned long key = CalculateTeamKey(id1, id2, id3);
