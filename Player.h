@@ -14,6 +14,13 @@ struct Player
     , birdieAvg(0.0f)
     {};
 
+    struct Player(const Player& rhs)
+    : id(rhs.id)
+    , name(rhs.name)
+    , cost(rhs.cost)
+    , birdieAvg(rhs.birdieAvg)
+    {};
+
     struct Player(int i_id, const std::string& i_name, float i_cost, float i_birdieAvg)
     : id(i_id)
     , name(i_name)
@@ -38,7 +45,7 @@ struct greater_than_id
     }
 };
 
-struct less_than_cost
+struct player_less_than_cost
 {
     inline bool operator() (const Player& player1, const Player& player2)
     {
@@ -46,26 +53,10 @@ struct less_than_cost
     }
 };
 
-struct greater_than_cost
+struct player_greater_than_cost
 {
     inline bool operator() (const Player& player1, const Player& player2)
     {
         return (player1.cost > player2.cost);
-    }
-};
-
-struct less_than_birdie_avg
-{
-    inline bool operator() (const Player& player1, const Player& player2)
-    {
-        return (player1.birdieAvg < player2.birdieAvg);
-    }
-};
-
-struct greater_than_birdie_avg
-{
-    inline bool operator() (const Player& player1, const Player& player2)
-    {
-        return (player1.birdieAvg > player2.birdieAvg);
     }
 };

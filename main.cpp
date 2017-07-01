@@ -5,8 +5,12 @@
 #include "Key.h"
 
 #include <vector>
+#include <stack>
+#include <queue>
 #include <map>
+#include <algorithm>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 #include <chrono> //Timers for testing purposes
@@ -20,13 +24,22 @@ std::string ExtractSubstring(std::string& line);
 float CalculateBirdieAvg(std::string birdieAvgStr);
 void HandleMissingRequiredStats();
 void HandleCannotOpenFile();
-void CalculateCombinations(std::vector<Player>& playerStats);
+void CalculateCombinations(std::vector<Player>& players,
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& minBirdieAvgQueue);
 void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
 void Generate3ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
+void GenerateBest4ManTeamCombos(std::vector<Player>& players,
+    std::map<unsigned long, TeamData>* teamData,
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& minBirdieAvgQueue);
+void PrintBestCombinations(std::vector<Player>& players,
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& results);
+
 
 typedef std::chrono::steady_clock Clock;
 
 //Constants
+const float MAX_TEAM_COST = 30000;
+const int MAX_NUM_OUTPUT_TEAMS = 10;
 std::string DELIMITER = ",";
 
 int main(int argc, char* argv[])
@@ -48,26 +61,28 @@ int main(int argc, char* argv[])
     //    std::cout << "Cost: " << player.cost << std::endl;
     //    std::cout << "Birdie Avg: " << player.birdieAvg << std::endl;
     //}
-    std::cout << "--------------------------------------" << std::endl;
-    std::cout << "Name: " << players[87].name << std::endl;
-    std::cout << "ID  : " << players[87].id << std::endl;
-    std::cout << "Cost: " << players[87].cost << std::endl;
-    std::cout << "Birdie Avg: " << players[87].birdieAvg << std::endl;
-    std::cout << "--------------------------------------" << std::endl;
-    std::cout << "Name: " << players[102].name << std::endl;
-    std::cout << "ID  : " << players[102].id << std::endl;
-    std::cout << "Cost: " << players[102].cost << std::endl;
-    std::cout << "Birdie Avg: " << players[102].birdieAvg << std::endl;
-    std::cout << "--------------------------------------" << std::endl;
-    std::cout << "Name: " << players[45].name << std::endl;
-    std::cout << "ID  : " << players[45].id << std::endl;
-    std::cout << "Cost: " << players[45].cost << std::endl;
-    std::cout << "Birdie Avg: " << players[45].birdieAvg << std::endl;
-    std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "Name: " << players[87].name << std::endl;
+    //std::cout << "ID  : " << players[87].id << std::endl;
+    //std::cout << "Cost: " << players[87].cost << std::endl;
+    //std::cout << "Birdie Avg: " << players[87].birdieAvg << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "Name: " << players[102].name << std::endl;
+    //std::cout << "ID  : " << players[102].id << std::endl;
+    //std::cout << "Cost: " << players[102].cost << std::endl;
+    //std::cout << "Birdie Avg: " << players[102].birdieAvg << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
+    //std::cout << "Name: " << players[45].name << std::endl;
+    //std::cout << "ID  : " << players[45].id << std::endl;
+    //std::cout << "Cost: " << players[45].cost << std::endl;
+    //std::cout << "Birdie Avg: " << players[45].birdieAvg << std::endl;
+    //std::cout << "--------------------------------------" << std::endl;
     //END TEST
 
-    CalculateCombinations(players);
-    //PrintBestCombinations();
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg> results;
+
+    CalculateCombinations(players, results);
+    PrintBestCombinations(players, results);
 }
 
 void CheckArguments(int argc)
@@ -199,34 +214,43 @@ void HandleCannotOpenFile()
 
 //Assume ~150 players, of which 4 must be selected. 150!/146! = 486,246,600 permutations
 //486,246,600/4! = 20,260,275 combinations
-void CalculateCombinations(std::vector<Player>& playerStats)
+void CalculateCombinations(std::vector<Player>& players,
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& results)
 {   
     std::map<unsigned long, TeamData>* teamData = new std::map<unsigned long, TeamData>();
     auto timeBegin2Man = Clock::now();
-    Generate2ManTeamCombos(playerStats, teamData);
+    Generate2ManTeamCombos(players, teamData);
     auto timeEnd2Man = Clock::now();
     int twoManCombos = teamData->size();
     std::cout << "Two man combos: " << twoManCombos << std::endl;
 
     auto timeBegin3Man = Clock::now();
-    Generate3ManTeamCombos(playerStats, teamData);
+    Generate3ManTeamCombos(players, teamData);
     auto timeEnd3Man = Clock::now();
-    std::cout << "Three man combos: " << teamData->size() - twoManCombos << std::endl;
+    int threeManCombos = teamData->size() - twoManCombos;
+    std::cout << "Three man combos: " << threeManCombos << std::endl;
+
+    
+
+    auto timeBegin4Man = Clock::now();
+    GenerateBest4ManTeamCombos(players, teamData, results);
+    auto timeEnd4Man = Clock::now();
+
+    std::cout << "Four man combos: " << teamData->size() - (twoManCombos + threeManCombos) << std::endl;
     std::cout << "Total combos: " << teamData->size() << std::endl;
+    std::cout << "Best teams size: " << results.size() << std::endl;
 
-    //GenerateBest4ManTeamCombos();
-
-    std::map<unsigned long, TeamData>::iterator it = teamData->find(102087045);
-    if (it != teamData->end())
-    {
-        TeamData testTeam = it->second;
-        std::cout << "Total team cost: " << testTeam.totalCost << std::endl;
-        std::cout << "Total team birdie: " << testTeam.totalBirdieAvg << std::endl;
-    }
-    else
-    {
-        std::cout << "Could not find team in map" << std::endl;
-    }
+    //std::map<unsigned long, TeamData>::iterator it = teamData->find(102087045);
+    //if (it != teamData->end())
+    //{
+    //    TeamData testTeam = it->second;
+    //    std::cout << "Total team cost: " << testTeam.totalCost << std::endl;
+    //    std::cout << "Total team birdie: " << testTeam.totalBirdieAvg << std::endl;
+    //}
+    //else
+    //{   
+    //    std::cout << "Could not find team in map" << std::endl;
+    //}
 
     //TEST TIMERS
     std::chrono::duration<double> time2Man = 
@@ -235,6 +259,9 @@ void CalculateCombinations(std::vector<Player>& playerStats)
     std::chrono::duration<double> time3Man =
         std::chrono::duration_cast<std::chrono::duration<double>>(timeEnd3Man - timeBegin3Man);
     std::cout << "Generate 3 man teams: " << time3Man.count() << " sec" << std::endl;
+    std::chrono::duration<double> time4Man =
+        std::chrono::duration_cast<std::chrono::duration<double>>(timeEnd4Man - timeBegin4Man);
+    std::cout << "Generate 4 man teams: " << time4Man.count() << " sec" << std::endl;
     //END TEST TIMERS
 }
 
@@ -278,17 +305,11 @@ void Generate3ManTeamCombos(std::vector<Player>& players, std::map<unsigned long
     {
         int idLow = -1;
         int idHigh = -1;
-        TeamData twoManTeamData = it->second;
         ExtractTwoManIds(it->first, idLow, idHigh);
+        TeamData twoManTeamData = it->second;
         for (int idNew = idHigh + 1; idNew < players.size(); ++idNew)
         {
             //SortIdsLowToHigh(id1, id2, id3);
-            //TEST
-            /*if (id1 == 45 && id2 == 87 && id3 == 102)
-            {
-                std::cout << "Found 3 man team" << std::endl;
-            }*/
-            //END TEST
             Player newPlayer = players.at(idNew);
             float teamCost = twoManTeamData.totalCost + newPlayer.cost;
             float teamBirdieAvg = twoManTeamData.totalBirdieAvg + newPlayer.birdieAvg;
@@ -298,16 +319,91 @@ void Generate3ManTeamCombos(std::vector<Player>& players, std::map<unsigned long
     }
 }
 
-
-
-
-
-void GenerateBest4ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData)
+void GenerateBest4ManTeamCombos(std::vector<Player>& players, 
+    std::map<unsigned long, TeamData>* teamData,
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& minBirdieAvgQueue)
 {
-    //Make sure to check total cost < 30000 before adding team
+    std::map<unsigned long, TeamData>::iterator it;
+    for (it = teamData->begin(); it != teamData->end(); ++it)
+    {
+        int idLow = -1;
+        int idMid = -1;
+        int idHigh = -1;
+        ExtractThreeManIds(it->first, idLow, idMid, idHigh);
+        TeamData threeManTeamData = it->second;
+        for (int idNew = idHigh + 1; idNew < players.size(); ++idNew)
+        {
+            Player newPlayer = players.at(idNew);
+            float newTeamCost = threeManTeamData.totalCost + newPlayer.cost;
+            if (newTeamCost < MAX_TEAM_COST)
+            {
+                float newTeamBirdieAvg = threeManTeamData.totalBirdieAvg + newPlayer.birdieAvg;
+                TeamData newTeamData = TeamData(newTeamCost, newTeamBirdieAvg);
+
+                if (minBirdieAvgQueue.size() >= MAX_NUM_OUTPUT_TEAMS)
+                {
+                    if (newTeamBirdieAvg > minBirdieAvgQueue.top().GetBirdieAvg())
+                    {
+                        minBirdieAvgQueue.pop();
+                        Player p1 = players.at(idLow);
+                        Player p2 = players.at(idMid);
+                        Player p3 = players.at(idHigh);
+                        Player p4 = players.at(idNew);
+                        Team newTeam = Team(p1, p2, p3, p4, newTeamData);
+                        minBirdieAvgQueue.push(newTeam);
+                    }
+                }
+                else
+                {
+                    //queue is not filled yet. Push team onto queue so it will fill up
+                    Player p1 = players.at(idLow);
+                    Player p2 = players.at(idMid);
+                    Player p3 = players.at(idHigh);
+                    Player p4 = players.at(idNew);
+                    Team newTeam = Team(p1, p2, p3, p4, newTeamData);
+                    minBirdieAvgQueue.push(newTeam);
+                }
+            }
+        }
+    }
 }
 
-void PrintBestCombinations()
+void PrintBestCombinations(std::vector<Player>& players,
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& results)
 {
+    std::stack<Team> printStack;
+    while (results.size() > 0)  
+    {
+        Team team = results.top();
+        results.pop();
+        printStack.push(team);
+    }
+    
+    std::cout << std::endl;
+    std::cout << "==================================== RESULTS ===================================" << std::endl;
+    while (printStack.size() > 0)
+    {
+        Team team = printStack.top();
+        std::cout << "Team birdie avg: " << team.GetBirdieAvg() << std::endl;
+        std::cout << "Team cost: " << team.GetCost() << std::endl;
+        std::vector<Player> sortedPlayers;
+        sortedPlayers.push_back(team.GetPlayer1());
+        sortedPlayers.push_back(team.GetPlayer2());
+        sortedPlayers.push_back(team.GetPlayer3());
+        sortedPlayers.push_back(team.GetPlayer4());
+        std::sort(sortedPlayers.begin(), sortedPlayers.end(), player_less_than_cost());
+        std::vector<Player>::iterator it;
+        for (it = sortedPlayers.begin(); it != sortedPlayers.end(); ++it)
+        {
+            std::cout << "Player: " << std::setw(23) << std::left << it->name;
+            std::cout << std::setw(7) << std::right << it->cost;
+            std::cout << std::setw(7) << std::right << it->birdieAvg;
+            std::cout << std::endl;
+        }
 
+        std::cout << "--------------------------------------------" << std::endl;
+        
+        printStack.pop();
+    }
+    std::cout << "================================================================================" << std::endl;
 }

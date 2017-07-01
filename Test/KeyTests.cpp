@@ -110,7 +110,7 @@ TEST(KeyTest, CalculateKey2Ids)
     EXPECT_EQ(122065, key);
 }
 
-TEST(KeyTest, ExtractId)
+TEST(KeyTest, ExtractTwpIds)
 {
     int id1 = -1;
     int id2 = -1;
@@ -120,4 +120,18 @@ TEST(KeyTest, ExtractId)
 
     EXPECT_EQ(65, id1);
     EXPECT_EQ(122, id2);
+}
+
+TEST(KeyTest, ExtractThreeIds)
+{
+    int idLow = -1;
+    int idMid = -1;
+    int idHigh = -1;
+
+    unsigned long key = 102087045;
+    ExtractThreeManIds(key, idLow, idMid, idHigh);
+
+    EXPECT_EQ(45, idLow);
+    EXPECT_EQ(87, idMid);
+    EXPECT_EQ(102, idHigh);
 }

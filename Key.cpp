@@ -8,10 +8,19 @@ unsigned long CalculateTeamKey(int player1Id, int player2Id, int player3Id, int 
 }
 
 //id1 will be lesser id value
-void ExtractTwoManIds(unsigned long key, int& id1, int& id2)
+void ExtractTwoManIds(unsigned long key, int& idLow, int& idHigh)
 {
-    id1 = key % 1000;
-    id2 = key / 1000;
+    idHigh = key / 1000;
+    idLow = key % 1000;    
+}
+
+//id1 will be lesser id value
+void ExtractThreeManIds(unsigned long key, int& idLow, int& idMid, int& idHigh)
+{
+    idHigh = key / 1000000;
+    unsigned long temp = key % 1000000;
+    idMid = temp / 1000;
+    idLow = temp % 1000;    
 }
 
 //Sorts low to high
