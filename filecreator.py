@@ -17,7 +17,7 @@ Usage:
 import csv
 import urllib2
 import re
-from BeautifulSoup import BeautifulSoup as bsoup
+from bs4 import BeautifulSoup as bsoup
 
 #Birdie Percentage Stat
 STATS_URL = "http://www.pgatour.com/stats/stat.352.html"
@@ -28,7 +28,6 @@ def main():
     with open("./costs.csv", "r") as costs_file:
         #read costs
         costs_dict = create_costs_dict_from_file(costs_file)
-        #costs_name_list = create_key_list_from_dict(costs_dict)
         costs_name_list = sorted(costs_dict)
 
         #read birdie stats
@@ -38,7 +37,6 @@ def main():
         player_rows = soup.findAll('tr', {"id" : re.compile("playerStatsRow(.*)")})
         
         stats_dict = create_stats_dict_from_html(player_rows)
-        #stats_name_list = create_key_list_from_dict(stats_dict)
         stats_name_list = sorted(stats_dict)
         
         print_total_num_matches(costs_name_list, stats_name_list)
