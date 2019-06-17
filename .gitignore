@@ -42,9 +42,9 @@
 *.suo
 *.tlog
 *.user
-/.vs/*
-/Debug/*
-/Release/*
+*/.vs/*
+*/Debug/*
+*/Release/*
 
 # csv data files
 *.csv
