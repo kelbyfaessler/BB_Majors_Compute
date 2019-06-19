@@ -15,23 +15,28 @@ Usage:
 """
 
 import csv
-import urllib2
+from urllib.request import urlopen 
 import re
 from bs4 import BeautifulSoup as bsoup
+from csvcreator import create_csv_from_website_text
 
 #Birdie Percentage Stat
 STATS_URL = "http://www.pgatour.com/stats/stat.352.html"
+
+COSTS_INPUT_FILE = "./costs.txt"
+COSTS_CSV_FILE = "./costs.csv"
 OUTPUT_FILE = "output.csv"
 
 def main():
-    #costs_dict = {}
-    with open("./costs.csv", "r") as costs_file:
+    create_csv_from_website_text(COSTS_INPUT_FILE, COSTS_CSV_FILE)
+
+    with open(COSTS_CSV_FILE, "r") as costs_file:
         #read costs
         costs_dict = create_costs_dict_from_file(costs_file)
         costs_name_list = sorted(costs_dict)
 
         #read birdie stats
-        html = urllib2.urlopen(STATS_URL)
+        html = urlopen(STATS_URL)
         #use BeautifulSoup library to parse html
         soup = bsoup(html)
         player_rows = soup.findAll('tr', {"id" : re.compile("playerStatsRow(.*)")})
@@ -59,12 +64,6 @@ def create_costs_dict_from_file(costs_file):
     #print(costs_dict)
     return costs_dict
 
-def create_key_list_from_dict(dict):
-    key_list = []
-    for key in dict:
-        key_list.append(key)
-    return key_list
-
 def create_stats_dict_from_html(player_rows):
     stats_dict = {}
     for player_row in player_rows:
@@ -72,6 +71,7 @@ def create_stats_dict_from_html(player_rows):
         player_name = cells[2].text
         player_name = player_name.replace("&nbsp;", " ")
         player_name = player_name.replace(".", "")
+        player_name = player_name.replace("\n", "")
         if player_name[-4:] == " III":
             player_name = player_name.replace(" III", "")
         birdie_pct_str = cells[4].text
@@ -96,7 +96,7 @@ def combine_costs_stats(costs_dict, stats_dict):
     return output_list
 
 def create_output_csv(player_list):
-    with open(OUTPUT_FILE, 'wb') as output_file:
+    with open(OUTPUT_FILE, 'w', newline='') as output_file:
         writer = csv.DictWriter(output_file, 
                                 fieldnames=['Name', 'Cost', 'Birdie Avg'],
                                 delimiter=',')
