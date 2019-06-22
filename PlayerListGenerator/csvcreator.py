@@ -13,11 +13,20 @@ def create_csv_from_website_text(raw_costs_filename, output_filename):
         writer.writerow(['Name', 'Cost'])
         for line in raw_costs_file:
             items = line.split()
-            if len(items) >= 3:
-                items[0] = items[0] + ' ' + items[1]
-                items[1] = items[2]
+            #Remove last item if it's '+' since these tend to be copy/pasted from bb majors site
+            if items[-1] == '+':
+                del items[-1]
+            #Remove everything at end of line until numeric player cost is encountered
+            while items and not items[-1].isnumeric():
+                del items[-1]
+            #Merge all names into single string, remove existing names from list and put full name in front
+            full_name = " ".join(items[:-1])
+            del items[:-1]
+            items.insert(0, full_name)
+
+            #write to file
             if len(items) >= 2:
-                writer.writerow(items[0:2])
+                writer.writerow(items)
 
 # if __name__ == "__main__":
 # 	main()
