@@ -74,15 +74,9 @@ def calculate_combos(players: List[Player], num_teams: int=None) -> None:
                     player2 = players[idx2]
                     player3 = players[idx3]
                     player4 = players[idx4]
-                    #print("Now considering the following players:")
-                    #print_player(player1)
-                    #print_player(player2)
-                    #print_player(player3)
-                    #print_player(player4)
                     team_cost = player1.cost + player2.cost + player3.cost + player4.cost
                     if team_cost < TOTAL_ALLOWABLE_COST:
                         if len(best_teams) < num_teams:
-                            #print("Adding team, best teams not filled")
                             best_teams.append(PlayerTeam(player1, 
                                                          player2, 
                                                          player3, 
@@ -93,7 +87,6 @@ def calculate_combos(players: List[Player], num_teams: int=None) -> None:
                                                 player3.birdie_avg + 
                                                 player4.birdie_avg)
                             if team_birdie_avg > best_teams[0].total_birdie_avg:
-                                #print("Adding better team, best teams filled")
                                 best_teams[0] = PlayerTeam(player1, 
                                                             player2, 
                                                             player3, 
