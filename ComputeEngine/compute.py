@@ -27,6 +27,9 @@ import csv
 from typing import List
 from time import perf_counter
 
+# Cython modules
+from compute_cpp import CalculateCombinationsCpp
+
 DEFAULT_NUM_TEAMS = 10
 TOTAL_ALLOWABLE_COST = 30000
 
@@ -122,7 +125,10 @@ def calculate_combos_cmd_line(raw_costs_filename: str, num_teams: int) -> None:
     for player in partial_players:
         print(player.name)
     print("")
-    calculate_combos(players, num_teams)
+    #calculate_combos(players, num_teams)
+    #TODO: remove this debug print statement
+    print("In python file before cpp call")
+    CalculateCombinationsCpp(players)
 
 def read_players_from_file(filename: str, players: List[Player]) -> List[Player]:
     with open(filename) as file:

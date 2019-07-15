@@ -26,6 +26,7 @@ void HandleMissingRequiredStats();
 void HandleCannotOpenFile();
 void CalculateCombinations(std::vector<Player>& players,
     std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& minBirdieAvgQueue);
+void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& results);
 void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
 void Generate3ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
 void GenerateBest4ManTeamCombos(std::vector<Player>& players,
@@ -33,6 +34,7 @@ void GenerateBest4ManTeamCombos(std::vector<Player>& players,
     std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& minBirdieAvgQueue);
 void PrintBestCombinations(std::vector<Player>& players,
     std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& results);
+void PrintBestCombinations(std::vector<Player>& players, std::vector<Team>& results);
 
 
 typedef std::chrono::steady_clock Clock;
@@ -47,42 +49,23 @@ int main(int argc, char* argv[])
     CheckArguments(argc);
 
     std::string statsFile = std::string(argv[1]);
-    //std::map<unsigned int, Player> players;
     std::vector<Player> players;
     players.reserve(200);
     ReadPlayerStats(statsFile, players);
     std::cout << "Players in array: " << players.size() << std::endl;
 
-    //TEST
-    //for (Player player : statsVector)
-    //{
-    //    std::cout << "--------------------------------------" << std::endl;
-    //    std::cout << "Name: " << player.name << std::endl;
-    //    std::cout << "Cost: " << player.cost << std::endl;
-    //    std::cout << "Birdie Avg: " << player.birdieAvg << std::endl;
-    //}
-    //std::cout << "--------------------------------------" << std::endl;
-    //std::cout << "Name: " << players[87].name << std::endl;
-    //std::cout << "ID  : " << players[87].id << std::endl;
-    //std::cout << "Cost: " << players[87].cost << std::endl;
-    //std::cout << "Birdie Avg: " << players[87].birdieAvg << std::endl;
-    //std::cout << "--------------------------------------" << std::endl;
-    //std::cout << "Name: " << players[102].name << std::endl;
-    //std::cout << "ID  : " << players[102].id << std::endl;
-    //std::cout << "Cost: " << players[102].cost << std::endl;
-    //std::cout << "Birdie Avg: " << players[102].birdieAvg << std::endl;
-    //std::cout << "--------------------------------------" << std::endl;
-    //std::cout << "Name: " << players[45].name << std::endl;
-    //std::cout << "ID  : " << players[45].id << std::endl;
-    //std::cout << "Cost: " << players[45].cost << std::endl;
-    //std::cout << "Birdie Avg: " << players[45].birdieAvg << std::endl;
-    //std::cout << "--------------------------------------" << std::endl;
-    //END TEST
+    std::vector<Player> players2(players.begin(), players.end());   
 
     std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg> results;
+    std::vector<Team> results2;
 
     CalculateCombinations(players, results);
     PrintBestCombinations(players, results);
+
+    //-----------------------------------------------------------------------
+
+    CalculateCombinations2(players2, results2);
+    PrintBestCombinations(players2, results2);
 }
 
 void CheckArguments(int argc)
@@ -406,4 +389,101 @@ void PrintBestCombinations(std::vector<Player>& players,
         printStack.pop();
     }
     std::cout << "================================================================================" << std::endl;
+}
+
+void PrintBestCombinations(std::vector<Player>& players, std::vector<Team>& results)
+{
+    std::stack<Team> printStack;
+    for (const auto& team : results)
+    {
+        printStack.push(team);
+    }
+
+    std::cout << std::endl;
+    std::cout << "==================================== RESULTS ===================================" << std::endl;
+    while (printStack.size() > 0)
+    {
+        Team team = printStack.top();
+        std::cout << "Team birdie avg: " << team.GetBirdieAvg() << std::endl;
+        std::cout << "Team cost: " << team.GetCost() << std::endl;
+        std::vector<Player> sortedPlayers;
+        sortedPlayers.push_back(team.GetPlayer1());
+        sortedPlayers.push_back(team.GetPlayer2());
+        sortedPlayers.push_back(team.GetPlayer3());
+        sortedPlayers.push_back(team.GetPlayer4());
+        std::sort(sortedPlayers.begin(), sortedPlayers.end(), player_less_than_cost());
+        std::vector<Player>::iterator it;
+        for (it = sortedPlayers.begin(); it != sortedPlayers.end(); ++it)
+        {
+            std::cout << "Player: " << std::setw(23) << std::left << it->name;
+            std::cout << std::setw(7) << std::right << it->cost;
+            std::cout << std::setw(7) << std::right << it->birdieAvg;
+            std::cout << std::endl;
+        }
+
+        std::cout << "--------------------------------------------" << std::endl;
+
+        printStack.pop();
+    }
+    std::cout << "================================================================================" << std::endl;
+}
+
+void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& results)
+{
+    //TODO: Remove this debug print statement
+    std::cout << "Inside cpp code" << std::endl;
+
+    auto timeBegin = Clock::now();
+
+    std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg> minBirdieAvgQueue;
+
+    int playerCount = players.size();
+    for (int idx1 = 0; idx1 < playerCount - 3; ++idx1)
+    {
+        for (int idx2 = idx1 + 1; idx2 < playerCount - 2; ++idx2)
+        {
+            for (int idx3 = idx2 + 1; idx3 < playerCount - 1; ++ idx3)
+            {
+                for (int idx4 = idx3 + 1; idx4 < playerCount; ++idx4)
+                {
+                    float teamCost = players[idx1].cost + players[idx2].cost + players[idx3].cost + players[idx4].cost;
+                    if (teamCost < MAX_TEAM_COST)
+                    {
+                        float teamBirdieAvg = players[idx1].birdieAvg + players[idx2].birdieAvg + players[idx3].birdieAvg + players[idx4].birdieAvg;
+                        TeamData teamData = TeamData(teamCost, teamBirdieAvg);
+
+                        if (minBirdieAvgQueue.size() >= MAX_NUM_OUTPUT_TEAMS)
+                        {
+                            if (teamBirdieAvg > minBirdieAvgQueue.top().GetBirdieAvg())
+                            {
+                                minBirdieAvgQueue.pop();
+                                Team newTeam(players[idx1], players[idx2], players[idx3], players[idx4], teamData);
+                                minBirdieAvgQueue.push(newTeam);
+                            }
+                        }
+                        else
+                        {
+                            //queue is not filled yet. Push any team onto queue until it is filled
+                            Team newTeam(players[idx1], players[idx2], players[idx3], players[idx4], teamData);
+                            minBirdieAvgQueue.push(newTeam);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    auto timeEnd = Clock::now();
+    std::chrono::duration<double> totalTime =
+        std::chrono::duration_cast<std::chrono::duration<double>>(timeEnd - timeBegin);
+    std::cout << std::endl << std::endl << std::endl;
+    std::cout << "Time for second method: " << totalTime.count() << " sec" << std::endl;
+
+    while (!minBirdieAvgQueue.empty())
+    {
+        results.push_back(minBirdieAvgQueue.top());
+        minBirdieAvgQueue.pop();
+    }
+
+    std::reverse(results.begin(), results.end());
 }
