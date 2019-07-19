@@ -25,4 +25,4 @@ cdef extern from "Team.h":
 
 
 cdef extern from "main.cpp":
-    void CalculateCombinations2(vector[Player]& players, vector[Team]& results)
+    void CalculateCombinations2(vector[Player]& players, vector[Team]& results, int numTeams)

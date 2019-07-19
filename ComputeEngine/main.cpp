@@ -26,7 +26,7 @@ void HandleMissingRequiredStats();
 void HandleCannotOpenFile();
 void CalculateCombinations(std::vector<Player>& players,
     std::priority_queue<Team, std::vector<Team>, greater_than_birdie_avg>& minBirdieAvgQueue);
-void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& results);
+void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& results, int numTeams);
 void Generate2ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
 void Generate3ManTeamCombos(std::vector<Player>& playerStats, std::map<unsigned long, TeamData>* teamData);
 void GenerateBest4ManTeamCombos(std::vector<Player>& players,
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 
     //-----------------------------------------------------------------------
 
-    CalculateCombinations2(players2, results2);
+    CalculateCombinations2(players2, results2, MAX_NUM_OUTPUT_TEAMS);
     PrintBestCombinations(players2, results2);
 }
 
@@ -428,7 +428,7 @@ void PrintBestCombinations(std::vector<Player>& players, std::vector<Team>& resu
     std::cout << "================================================================================" << std::endl;
 }
 
-void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& results)
+void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& results, int numTeams)
 {
     //TODO: Remove this debug print statement
     std::cout << "Inside cpp code" << std::endl;
@@ -452,7 +452,7 @@ void CalculateCombinations2(std::vector<Player>& players, std::vector<Team>& res
                         float teamBirdieAvg = players[idx1].birdieAvg + players[idx2].birdieAvg + players[idx3].birdieAvg + players[idx4].birdieAvg;
                         TeamData teamData = TeamData(teamCost, teamBirdieAvg);
 
-                        if (minBirdieAvgQueue.size() >= MAX_NUM_OUTPUT_TEAMS)
+                        if (minBirdieAvgQueue.size() >= numTeams)
                         {
                             if (teamBirdieAvg > minBirdieAvgQueue.top().GetBirdieAvg())
                             {

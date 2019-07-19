@@ -7,7 +7,7 @@ from compute_cpp cimport CalculateCombinations2
 from compute_cpp cimport Player
 from compute_cpp cimport Team
 
-def CalculateCombinationsCpp(players_list):
+def CalculateCombinationsCpp(players_list, num_teams):
     #TODO: remove this debug print statement
     print("Inside pyx file before cpp call")
     cdef vector[Player] players_vector
@@ -18,7 +18,7 @@ def CalculateCombinationsCpp(players_list):
         newPlayerCpp.birdieAvg = pyPlayer.birdie_avg
         players_vector.push_back(newPlayerCpp)
     cdef vector[Team] results_vector
-    CalculateCombinations2(players_vector, results_vector)
+    CalculateCombinations2(players_vector, results_vector, num_teams)
 
     #For now, print results
     print("==================================== RESULTS ===================================")

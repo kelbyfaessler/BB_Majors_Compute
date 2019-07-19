@@ -128,7 +128,7 @@ def calculate_combos_cmd_line(raw_costs_filename: str, num_teams: int) -> None:
     #calculate_combos(players, num_teams)
     #TODO: remove this debug print statement
     print("In python file before cpp call")
-    CalculateCombinationsCpp(players)
+    CalculateCombinationsCpp(players, num_teams)
 
 def read_players_from_file(filename: str, players: List[Player]) -> List[Player]:
     with open(filename) as file:
