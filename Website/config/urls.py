@@ -22,6 +22,6 @@ urlpatterns = [
 
 from django.urls import include
 urlpatterns += [
-    path('', include('bbmajors_compute.core.urls')),
+    path('', include('bbmajors_compute.users.urls')),
     path('', include('bbmajors_compute.compute_engine.urls')),
 ]

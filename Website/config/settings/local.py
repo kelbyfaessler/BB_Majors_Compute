@@ -18,4 +18,9 @@ DATABASES = {
     }
 }
 
+# https://docs.djangoproject.com/en/dev/topics/email/#file-backend 
+#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+#EMAIL_FILE_PATH = BASE_DIR.path('test', 'email')
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # INSTALLED_APPS += ['debug_toolbar', ]

@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'bbmajors_compute.core.apps.CoreConfig',
+    'bbmajors_compute.users.apps.UsersConfig',
     'bbmajors_compute.compute_engine.apps.ComputeEngineConfig',
 ]
 
@@ -79,7 +79,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(APPS_DIR, 'users', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,13 +115,22 @@ AUTHENTICATION_BACKENDS = (
 
 # User model
 # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#substituting-a-custom-user-model
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Use email instead of username for logins
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400 # 1 day in seconds
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+#LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -165,6 +174,6 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'bbmajors_compute', 'static'),
-    os.path.join(BASE_DIR, 'bbmajors_compute', 'core', 'static'),
+    os.path.join(BASE_DIR, 'bbmajors_compute', 'users', 'static'),
     os.path.join(BASE_DIR, 'bbmajors_compute', 'compute_engine', 'static'),
 ]

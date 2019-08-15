@@ -9,7 +9,7 @@
   integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
   crossorigin="anonymous">
 
-  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'css/teams.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -22,7 +22,12 @@
                     <nav>
                     <ul class="nav masthead-nav">
                         <li class="active"><a href="{% url 'teams' %}">Teams</a></li>
-                        <li><a href="{% url 'signup' %}">Sign In</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                        {% else %}
+                        <li><a href="{% url 'account_login' %}">Sign In</a></li>
+                        <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
+                        {% endif %}    
                     </ul>
                     </nav>
                 </div>
