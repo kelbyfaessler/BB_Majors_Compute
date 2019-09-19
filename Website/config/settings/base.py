@@ -55,9 +55,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
+    # 3rd party
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'widget_tweaks',
+
+    # Local
     'bbmajors_compute.users.apps.UsersConfig',
     'bbmajors_compute.compute_engine.apps.ComputeEngineConfig',
 ]
@@ -106,6 +111,10 @@ DATABASES = {
     }
 }
 
+# TODO: Remove this debug code
+# AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+# TODO: end debug code
+
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
@@ -118,19 +127,26 @@ AUTHENTICATION_BACKENDS = (
 # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#substituting-a-custom-user-model
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Use email instead of username for logins
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_SESSION_REMEBER = True
+ACCOUNT_UNIQUE_EMAIL = True
 
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400 # 1 day in seconds
+LOGIN_REDIRECT_URL = 'teams'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_LOGOUT_ON_GET = True
+
+# Use email instead of username for logins
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
+# 
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400 # 1 day in seconds
 #LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
+
 
 
 # Password validation

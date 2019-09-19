@@ -43,7 +43,10 @@ Heavily re-used the django default UserManager
 #         return self._create_user(email, password, is_staff, is_superuser, **extra_fields)
 
 class CustomUser(AbstractUser):
-    pass
+    # Add additional custom fields here
+
+    def __str__(self):
+        return self.email
 
 # class User(AbstractBaseUser, PermissionsMixin):
 #     email=models.EmailField(_('email address'), unique=True, max_length=254, blank=False, error_messages={
