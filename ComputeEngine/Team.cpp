@@ -32,25 +32,29 @@ void Team::SetPlayers(Player p1, Player p2, Player p3, Player p4)
     members[3] = p4;
 }
 
-void Team::SetPlayer1(Player p1)
+void Team::SetPlayer(int player_index, Player player)
 {
-    members[0] = p1;
+    if (player_index >= 0 && player_index < PLAYERS_PER_TEAM)
+    {
+        members[player_index] = player;
+    }
 }
 
-void Team::SetPlayer2(Player p2)
+int Team::GetNumPlayers()
 {
-    members[1] = p2;
+    return PLAYERS_PER_TEAM;
 }
 
-void Team::SetPlayer3(Player p3)
+Player Team::GetPlayer(int player_index)
 {
-    members[2] = p3;
-}
-
-void Team::SetPlayer4(Player p4)
-{
-    members[3] = p4;
-}
+    if (player_index >= 0 && player_index < PLAYERS_PER_TEAM)
+    {
+        return members[player_index];
+    }
+    Player invalidPlayer;
+    invalidPlayer.name = "invalid";
+    return invalidPlayer;
+};
 
 float Team::GetCost() const
 {

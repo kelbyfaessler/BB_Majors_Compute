@@ -1,6 +1,8 @@
 #pragma once
 #include "Player.h"
 
+const int PLAYERS_PER_TEAM = 4;
+
 struct TeamData
 {
     float totalCost;
@@ -25,24 +27,18 @@ public:
     Team(Player p1, Player p2, Player p3, Player p4, TeamData teamData);
     ~Team();
 
+    void SetPlayer(int player_index, Player player);
     void SetPlayers(Player p1, Player p2, Player p3, Player p4);
-    void SetPlayer1(Player p1);
-    void SetPlayer2(Player p2);
-    void SetPlayer3(Player p3);
-    void SetPlayer4(Player p4);
 
-    Player GetPlayer1() { return members[0]; };
-    Player GetPlayer2() { return members[1]; };
-    Player GetPlayer3() { return members[2]; };
-    Player GetPlayer4() { return members[3]; };
+    int GetNumPlayers();
+    Player GetPlayer(int player_index);
     float GetCost() const;
     float GetBirdieAvg() const;
 
 private:
-    Player members[4];
+    Player members[PLAYERS_PER_TEAM];
     float cost;
     float birdieAvg;
-    //TeamData totals;
 };
 
 struct greater_than_birdie_avg

@@ -251,9 +251,9 @@ void CalculateCombinations(std::vector<Player>& players,
 void Generate2ManTeamCombos(std::vector<Player>& players, std::map<unsigned long, TeamData>* teamData)
 {
     bool outputYet = false;
-    for (int idLow = 0; idLow < players.size() - 1; ++idLow)
+    for (unsigned int idLow = 0; idLow < players.size() - 1; ++idLow)
     {
-        for (int idHigh = idLow + 1; idHigh < players.size(); ++idHigh)
+        for (unsigned int idHigh = idLow + 1; idHigh < players.size(); ++idHigh)
         {
             unsigned long key = CalculateTeamKey(idLow, idHigh);
             Player player1 = players.at(idLow);
@@ -290,7 +290,7 @@ void Generate3ManTeamCombos(std::vector<Player>& players, std::map<unsigned long
         int idHigh = -1;
         ExtractTwoManIds(it->first, idLow, idHigh);
         TeamData twoManTeamData = it->second;
-        for (int idNew = idHigh + 1; idNew < players.size(); ++idNew)
+        for (unsigned int idNew = idHigh + 1; idNew < players.size(); ++idNew)
         {
             //SortIdsLowToHigh(id1, id2, id3);
             Player newPlayer = players.at(idNew);
@@ -309,12 +309,12 @@ void GenerateBest4ManTeamCombos(std::vector<Player>& players,
     std::map<unsigned long, TeamData>::iterator it;
     for (it = teamData->begin(); it != teamData->end(); ++it)
     {
-        int idLow = -1;
-        int idMid = -1;
-        int idHigh = -1;
+        unsigned int idLow = 0;
+        unsigned int idMid = 0;
+        unsigned int idHigh = 0;
         ExtractThreeManIds(it->first, idLow, idMid, idHigh);
         TeamData threeManTeamData = it->second;
-        for (int idNew = idHigh + 1; idNew < players.size(); ++idNew)
+        for (unsigned int idNew = idHigh + 1; idNew < players.size(); ++idNew)
         {
             Player newPlayer = players.at(idNew);
             float newTeamCost = threeManTeamData.totalCost + newPlayer.cost;
@@ -370,10 +370,10 @@ void PrintBestCombinations(std::vector<Player>& players,
         std::cout << "Team birdie avg: " << team.GetBirdieAvg() << std::endl;
         std::cout << "Team cost: " << team.GetCost() << std::endl;
         std::vector<Player> sortedPlayers;
-        sortedPlayers.push_back(team.GetPlayer1());
-        sortedPlayers.push_back(team.GetPlayer2());
-        sortedPlayers.push_back(team.GetPlayer3());
-        sortedPlayers.push_back(team.GetPlayer4());
+        for (int player_index = 0; player_index < PLAYERS_PER_TEAM; ++player_index)
+        {
+            sortedPlayers.push_back(team.GetPlayer(player_index));
+        }
         std::sort(sortedPlayers.begin(), sortedPlayers.end(), player_less_than_cost());
         std::vector<Player>::iterator it;
         for (it = sortedPlayers.begin(); it != sortedPlayers.end(); ++it)
@@ -407,10 +407,10 @@ void PrintBestCombinations(std::vector<Player>& players, std::vector<Team>& resu
         std::cout << "Team birdie avg: " << team.GetBirdieAvg() << std::endl;
         std::cout << "Team cost: " << team.GetCost() << std::endl;
         std::vector<Player> sortedPlayers;
-        sortedPlayers.push_back(team.GetPlayer1());
-        sortedPlayers.push_back(team.GetPlayer2());
-        sortedPlayers.push_back(team.GetPlayer3());
-        sortedPlayers.push_back(team.GetPlayer4());
+        for (int player_index = 0; player_index < PLAYERS_PER_TEAM; ++player_index)
+        {
+            sortedPlayers.push_back(team.GetPlayer(player_index));
+        }
         std::sort(sortedPlayers.begin(), sortedPlayers.end(), player_less_than_cost());
         std::vector<Player>::iterator it;
         for (it = sortedPlayers.begin(); it != sortedPlayers.end(); ++it)

@@ -15,7 +15,7 @@ void ExtractTwoManIds(unsigned long key, int& idLow, int& idHigh)
 }
 
 //id1 will be lesser id value
-void ExtractThreeManIds(unsigned long key, int& idLow, int& idMid, int& idHigh)
+void ExtractThreeManIds(unsigned long key, unsigned int& idLow, unsigned int& idMid, unsigned int& idHigh)
 {
     idHigh = key / 1000000;
     unsigned long temp = key % 1000000;
